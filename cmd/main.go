@@ -29,9 +29,9 @@ type Reference struct {
 }
 
 type Span struct {
-	TraceID string  `json:"traceID"`
-	SpanID string `json:"spanID"`
-	Process Process `json:"process"`
+	TraceID    string      `json:"traceID"`
+	SpanID     string      `json:"spanID"`
+	Process    Process     `json:"process"`
 	References []Reference `json:"references"`
 }
 
@@ -58,7 +58,7 @@ func main() {
 
 	_, err = client.DeleteIndex(GenIndexNameWithPrefix(jagerDepPrefix)).Do(ctx)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println("Warning", err.Error())
 	}
 
 	bulkProcessorService := elastic.NewBulkProcessorService(client)
@@ -132,8 +132,8 @@ func main() {
 		dependencies = append(
 			dependencies,
 			model.DependencyLink{
-				Parent: fromto[0],
-				Child: fromto[1],
+				Parent:    fromto[0],
+				Child:     fromto[1],
 				CallCount: count,
 			},
 		)
