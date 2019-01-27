@@ -15,7 +15,7 @@ import (
 )
 
 const jaegerSpanPrefix string = "jaeger-span-"
-const jagerDepPrefix string = "jaeger-dependencies-"
+const jaegerDepPrefix string = "jaeger-dependencies-"
 const bulkReadSize = 500
 
 type Process struct {
@@ -49,14 +49,19 @@ func GenIndexNameWithPrefix(prefix string) string {
 }
 
 func main() {
+	esUsername := os.Getenv("ES_USERNAME")
+	esPassword := os.Getenv("ES_PASSWORD")
 	client, err := elastic.NewSimpleClient(
-		elastic.SetURL(os.Getenv("ES_HOST")))
+		elastic.SetURL(os.Getenv("ES_HOST")),
+		elastic.SetBasicAuth(esUsername, esPassword))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	ctx := context.Background()
 
-	_, err = client.DeleteIndex(GenIndexNameWithPrefix(jagerDepPrefix)).Do(ctx)
+	esIndexPrefix := os.Getenv("ES_INDEX_PREFIX")
+
+	_, err = client.DeleteIndex(GenIndexNameWithPrefix(esIndexPrefix + jaegerDepPrefix)).Do(ctx)
 	if err != nil {
 		log.Println("Warning", err.Error())
 	}
@@ -79,7 +84,7 @@ func main() {
 	fullQuery := elastic.NewBoolQuery()
 	fullQuery.Must(hasReferencesNestedQuery, serverSpanQuery)
 
-	searchService := client.Scroll(GenIndexNameWithPrefix(jaegerSpanPrefix)).
+	searchService := client.Scroll(GenIndexNameWithPrefix(esIndexPrefix + jaegerSpanPrefix)).
 		Type("span").
 		Query(fullQuery).
 		Scroll("2m").
@@ -103,7 +108,7 @@ func main() {
 				parentSpanQuery := elastic.NewTermQuery("spanID", refSpanID)
 				searchSpanService := client.
 					Search().
-					Index(GenIndexNameWithPrefix("jaeger-span-")).
+					Index(GenIndexNameWithPrefix(esIndexPrefix + jaegerSpanPrefix)).
 					Type("span").
 					Query(parentSpanQuery).
 					IgnoreUnavailable(true)
