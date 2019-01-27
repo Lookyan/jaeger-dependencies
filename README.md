@@ -7,6 +7,7 @@ An alternative to [spark-dependencies](https://github.com/jaegertracing/spark-de
 Written in golang, without spark. Better for systems with big amount of traces in elasticsearch and small graphs.
 
 ![jaeger UI graph](./media/jaeger-deps.png)
+[jaeger-UI](https://github.com/jaegertracing/jaeger-ui)
 
 ## Run
 
@@ -23,7 +24,6 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: jaeger-dependencies
-  namespace: tracing
 spec:
   schedule: "0 22 * * *"
   jobTemplate:
@@ -37,11 +37,6 @@ spec:
             - name: "ES_HOST"
               value: "http://elasticsearch-node:9200"
           restartPolicy: Never
-```
-
-## Build
-```bash
-go build ./cmd/main.go
 ```
 
 ## Configuration
