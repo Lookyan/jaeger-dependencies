@@ -147,7 +147,7 @@ func main() {
 		)
 	}
 
-	store := dependencystore.NewDependencyStore(esClientWrapper, nil, "")
+	store := dependencystore.NewDependencyStore(esClientWrapper, nil, esIndexPrefix)
 	err = store.WriteDependencies(time.Now(), dependencies)
 	if err != nil {
 		log.Fatal(err.Error())
