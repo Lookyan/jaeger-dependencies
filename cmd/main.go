@@ -60,6 +60,9 @@ func main() {
 	ctx := context.Background()
 
 	esIndexPrefix := os.Getenv("ES_INDEX_PREFIX")
+	if esIndexPrefix != "" {
+		esIndexPrefix += ":"
+	}
 
 	_, err = client.DeleteIndex(GenIndexNameWithPrefix(esIndexPrefix + jaegerDepPrefix)).Do(ctx)
 	if err != nil {
