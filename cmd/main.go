@@ -147,6 +147,10 @@ func main() {
 		)
 	}
 
+	if esIndexPrefix != "" {
+		esIndexPrefix = strings.TrimSuffix(esIndexPrefix, ":")
+	}
+
 	store := dependencystore.NewDependencyStore(esClientWrapper, nil, esIndexPrefix)
 	err = store.WriteDependencies(time.Now(), dependencies)
 	if err != nil {
